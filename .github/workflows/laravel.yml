@@ -1,0 +1,22 @@
+name: Laravel CI/CD
+
+on:
+  push:
+    branches: ["main"]
+  pull_request:
+    branches: ["main"]
+
+jobs:
+  run_build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build the Docker image
+        run: docker build --no-cache -t ghcr.io/alfian57/presensi-skansaba-web:latest .
+
+      - name: Log in to the GitHub Container Registry
+        run: echo ${{ secrets.DOCKER_TOKEN }} | docker login ghcr.io -u ${{ secrets.DOCKER_USERNAME }} --password-stdin
+
+      - name: Push the Docker image
+        run: docker push ghcr.io/alfian57/presensi-skansaba-web:latest
