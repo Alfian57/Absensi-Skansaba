@@ -4,12 +4,11 @@ namespace App\Http\Controllers;
 
 use App\Exports\AttendanceExport;
 use App\Helper;
-use App\Models\Attendance;
 use App\Http\Requests\UpdateAttendanceRequest;
+use App\Models\Attendance;
 use App\Models\Grade;
-use Maatwebsite\Excel\Facades\Excel;
 use App\Models\Student;
-use RealRashid\SweetAlert\Facades\Alert;
+use Maatwebsite\Excel\Facades\Excel;
 
 class AttendanceController extends Controller
 {
@@ -46,7 +45,7 @@ class AttendanceController extends Controller
         if (request('date')) {
             $attendances->where('present_date', request('date'));
         } else {
-            $attendances->where('present_date', date("Y-m-d"));
+            $attendances->where('present_date', date('Y-m-d'));
         }
 
         if (request('desc')) {
@@ -56,7 +55,7 @@ class AttendanceController extends Controller
         $data = [
             'title' => 'Semua Data Absensi',
             'attendances' => $attendances->with('student')->limit(1000)->get(),
-            'grades' => Grade::orderBy('name', "ASC")->get()
+            'grades' => Grade::orderBy('name', 'ASC')->get(),
         ];
 
         return view('attendance.index', $data);
@@ -116,7 +115,6 @@ class AttendanceController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  \App\Models\Attendance  $attendance
      * @return \Illuminate\Http\Response
      */
     public function show(Attendance $attendance)
@@ -127,12 +125,11 @@ class AttendanceController extends Controller
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  \App\Models\Attendance  $attendance
      * @return \Illuminate\Http\Response
      */
     public function edit(Attendance $attendance)
     {
-        Helper::addHistory('/admin/attendances/' . $attendance->id . "/edit", 'Ubah Rekap Absensi');
+        Helper::addHistory('/admin/attendances/'.$attendance->id.'/edit', 'Ubah Rekap Absensi');
 
         $data = [
             'title' => 'Tambah Data Absensi',
@@ -145,21 +142,19 @@ class AttendanceController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param  \App\Http\Requests\UpdateAttendanceRequest  $request
-     * @param  \App\Models\Attendance  $attendance
      * @return \Illuminate\Http\Response
      */
     public function update(UpdateAttendanceRequest $request, Attendance $attendance)
     {
         $validatedData = $request->validate([
             'student_id' => 'required',
-            'desc' => 'required'
+            'desc' => 'required',
         ]);
 
-        $id = Attendance::where('student_id', $request->student_id)->where('present_date', date("Y-m-d"))->first();
+        $id = Attendance::where('student_id', $request->student_id)->where('present_date', date('Y-m-d'))->first();
         $id = $id->id;
 
-        $validatedData['present_date'] = date("Y-m-d");
+        $validatedData['present_date'] = date('Y-m-d');
 
         Attendance::where('id', $id)->update($validatedData);
 
@@ -169,7 +164,6 @@ class AttendanceController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \App\Models\Attendance  $attendance
      * @return \Illuminate\Http\Response
      */
     public function destroy(Attendance $attendance)
@@ -193,7 +187,7 @@ class AttendanceController extends Controller
                 $grade = 0;
             }
 
-            $students->where("student_id", $grade);
+            $students->where('student_id', $grade);
         }
 
         if (request('nisn')) {
@@ -203,7 +197,7 @@ class AttendanceController extends Controller
         $data = [
             'title' => 'Semua Rekap Siswa',
             'students' => $students->get(),
-            'grades' => Grade::orderBy('name', "ASC")->get()
+            'grades' => Grade::orderBy('name', 'ASC')->get(),
         ];
 
         return view('attendance.rekap', $data);
@@ -211,7 +205,7 @@ class AttendanceController extends Controller
 
     public function rekapShow($nisn)
     {
-        Helper::addHistory('/admin/attendances/rekap/' . $nisn, 'Detail Rekap Siswa');
+        Helper::addHistory('/admin/attendances/rekap/'.$nisn, 'Detail Rekap Siswa');
 
         $student = Student::where('nisn', $nisn)->first();
         $studentId = $student->id;
@@ -219,15 +213,15 @@ class AttendanceController extends Controller
         $attendances = Attendance::where('student_id', $studentId);
 
         if (request('month')) {
-            $attendances->whereRaw('MONTH(present_date)=' . request('month'));
+            $attendances->whereRaw('MONTH(present_date)='.request('month'));
         } else {
-            $attendances->whereRaw('MONTH(present_date)=' . date("m"));
+            $attendances->whereRaw('MONTH(present_date)='.date('m'));
         }
 
         if (request('year')) {
-            $attendances->whereRaw('YEAR(present_date)=' . request('year'));
+            $attendances->whereRaw('YEAR(present_date)='.request('year'));
         } else {
-            $attendances->whereRaw('YEAR(present_date)=' . date("Y"));
+            $attendances->whereRaw('YEAR(present_date)='.date('Y'));
         }
 
         $masuk = $attendances->clone();
@@ -237,7 +231,7 @@ class AttendanceController extends Controller
         $alpha = $attendances->clone();
 
         $data = [
-            'title' => 'Detail Rekap ' . $student->name,
+            'title' => 'Detail Rekap '.$student->name,
             'name' => $student->name,
             'attendances' => $attendances->limit(1000)->get(),
             'nisn' => $nisn,
@@ -260,7 +254,7 @@ class AttendanceController extends Controller
 
         $data = [
             'title' => 'Semua Rekap Kelas',
-            'grades' => Grade::orderBy('name', "ASC")->get()
+            'grades' => Grade::orderBy('name', 'ASC')->get(),
         ];
 
         return view('attendance.gradeRekap', $data);
@@ -276,28 +270,28 @@ class AttendanceController extends Controller
         $attendances = Attendance::whereIn('student_id', $studentId);
 
         if (request('month')) {
-            $attendances->whereRaw('MONTH(present_date)=' . request('month'));
+            $attendances->whereRaw('MONTH(present_date)='.request('month'));
         } else {
-            $attendances->whereRaw('MONTH(present_date)=' . date("m"));
+            $attendances->whereRaw('MONTH(present_date)='.date('m'));
         }
 
         if (request('year')) {
-            $attendances->whereRaw('YEAR(present_date)=' . request('year'));
+            $attendances->whereRaw('YEAR(present_date)='.request('year'));
         } else {
-            $attendances->whereRaw('YEAR(present_date)=' . date("Y"));
+            $attendances->whereRaw('YEAR(present_date)='.date('Y'));
         }
 
         $days = [];
         if (request('month')) {
             $days = Attendance::selectRaw('EXTRACT(DAY FROM present_date) as day')
-                ->whereRaw('MONTH(present_date)=' . request('month'))
+                ->whereRaw('MONTH(present_date)='.request('month'))
                 ->whereIn('student_id', $studentId)
                 ->distinct()
                 ->orderBy('day', 'ASC')
                 ->get();
         } else {
             $days = Attendance::selectRaw('EXTRACT(DAY FROM present_date) as day')
-                ->whereRaw('MONTH(present_date)=' . date("m"))
+                ->whereRaw('MONTH(present_date)='.date('m'))
                 ->whereIn('student_id', $studentId)
                 ->distinct()
                 ->orderBy('day', 'ASC')
@@ -306,22 +300,22 @@ class AttendanceController extends Controller
         $data = [];
         foreach ($days as $day) {
             $masuk = $attendances->clone();
-            $masuk->where('desc', 'masuk')->whereRaw('DAY(present_date)=' . $day->day);
+            $masuk->where('desc', 'masuk')->whereRaw('DAY(present_date)='.$day->day);
 
             $terlambat = $attendances->clone();
-            $terlambat->where('desc', 'terlambat')->whereRaw('DAY(present_date)=' . $day->day);
+            $terlambat->where('desc', 'terlambat')->whereRaw('DAY(present_date)='.$day->day);
 
             $sakit = $attendances->clone();
-            $sakit->where('desc', 'sakit')->whereRaw('DAY(present_date)=' . $day->day);
+            $sakit->where('desc', 'sakit')->whereRaw('DAY(present_date)='.$day->day);
 
             $ijin = $attendances->clone();
-            $ijin->where('desc', 'ijin')->whereRaw('DAY(present_date)=' . $day->day);
+            $ijin->where('desc', 'ijin')->whereRaw('DAY(present_date)='.$day->day);
 
             $alpha = $attendances->clone();
-            $alpha->where('desc', 'alpha')->whereRaw('DAY(present_date)=' . $day->day);
+            $alpha->where('desc', 'alpha')->whereRaw('DAY(present_date)='.$day->day);
 
             $bolos = $attendances->clone();
-            $bolos->where('desc', 'masuk (bolos)')->whereRaw('DAY(present_date)=' . $day->day);
+            $bolos->where('desc', 'masuk (bolos)')->whereRaw('DAY(present_date)='.$day->day);
 
             $data[] = [
                 'tanggal' => $day->day,
@@ -335,7 +329,7 @@ class AttendanceController extends Controller
         }
 
         $data = [
-            'title' => 'Detail Rekap ' . $grade->name,
+            'title' => 'Detail Rekap '.$grade->name,
             'name' => $grade->name,
             'data' => $data,
             'slug' => $slug,
@@ -349,12 +343,12 @@ class AttendanceController extends Controller
 
     public function exportExcel()
     {
-        if (!request('grade') || !request('date')) {
+        if (! request('grade') || ! request('date')) {
             return redirect()->back();
         }
 
         $grade = Grade::where('slug', request('grade'))->first();
-        $fileName = "Rekap Kelas $grade->name | " . request('date') . ".xlsx";
+        $fileName = "Rekap Kelas $grade->name | ".request('date').'.xlsx';
 
         return Excel::download(new AttendanceExport(request('grade'), request('date')), $fileName);
     }

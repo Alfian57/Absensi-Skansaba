@@ -2,13 +2,11 @@
 
 namespace App\Http\Controllers\Api;
 
-use App\Models\Schedule;
 use App\Http\Controllers\Controller;
-use App\Models\Attendance;
 use App\Models\Grade;
+use App\Models\Schedule;
 use App\Models\SkippingClass;
 use App\Models\Student;
-use App\Models\Subject;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 
@@ -16,12 +14,13 @@ class ScheduleController extends Controller
 {
     public function index()
     {
-        if (!request('day')) {
+        if (! request('day')) {
             $response = [
-                'message'       => "Masukan Field 'day'",
-                'errors'    => null,
-                'data'      => null
+                'message' => "Masukan Field 'day'",
+                'errors' => null,
+                'data' => null,
             ];
+
             return response()->json($response);
         }
 
@@ -30,10 +29,11 @@ class ScheduleController extends Controller
 
         if ($student == null) {
             $response = [
-                'message'       => 'Murid Tidak Ditemukan',
-                'errors'    => null,
-                'data'      => null
+                'message' => 'Murid Tidak Ditemukan',
+                'errors' => null,
+                'data' => null,
             ];
+
             return response()->json($response);
         }
 
@@ -46,12 +46,13 @@ class ScheduleController extends Controller
             ->get();
 
         $response = [
-            'message'       => 'Jadwal Ditemukan',
-            'errors'    => null,
-            'data'      => [
-                'schedules' => $schedules
-            ]
+            'message' => 'Jadwal Ditemukan',
+            'errors' => null,
+            'data' => [
+                'schedules' => $schedules,
+            ],
         ];
+
         return response()->json($response);
     }
 
@@ -79,19 +80,19 @@ class ScheduleController extends Controller
         $day = Carbon::now();
         $day->setTimezone('Asia/Jakarta');
         $day = $day->translatedFormat('l');
-        if ($day == "Sunday") {
+        if ($day == 'Sunday') {
             $schedules->where('day', 'minggu');
-        } else if ($day == "Monday") {
+        } elseif ($day == 'Monday') {
             $schedules->where('day', 'senin');
-        } else if ($day == "Tuesday") {
+        } elseif ($day == 'Tuesday') {
             $schedules->where('day', 'selasa');
-        } else if ($day == "Wednesday") {
+        } elseif ($day == 'Wednesday') {
             $schedules->where('day', 'rabu');
-        } else if ($day == "Thursday") {
+        } elseif ($day == 'Thursday') {
             $schedules->where('day', 'kamis');
-        } else if ($day == "Friday") {
+        } elseif ($day == 'Friday') {
             $schedules->where('day', 'jumat');
-        } else if ($day == "Saturday") {
+        } elseif ($day == 'Saturday') {
             $schedules->where('day', 'sabtu');
         }
 

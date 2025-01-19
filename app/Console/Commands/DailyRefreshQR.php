@@ -30,11 +30,11 @@ class DailyRefreshQR extends Command
     public function handle()
     {
         OtherData::where('name', 'QR Absensi Masuk')->update([
-            'value' => Str::random(20)
+            'value' => Str::random(20),
         ]);
 
         OtherData::where('name', 'QR Absensi Pulang')->update([
-            'value' => Str::random(20)
+            'value' => Str::random(20),
         ]);
     }
 }

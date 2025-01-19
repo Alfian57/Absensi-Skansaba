@@ -5,8 +5,6 @@ namespace App\Http\Controllers;
 use App\Helper;
 use App\Models\Grade;
 use App\Models\Student;
-use Illuminate\Http\Request;
-use RealRashid\SweetAlert\Facades\Alert;
 
 class ActiveAccountController extends Controller
 {
@@ -26,18 +24,18 @@ class ActiveAccountController extends Controller
         }
 
         return view('activeAccount.index', [
-            'title' => "Akun Aktif",
+            'title' => 'Akun Aktif',
             'students' => $students->take(500)
                 ->latest()
                 ->get(),
-            'grades' => Grade::latest()->get()
+            'grades' => Grade::latest()->get(),
         ]);
     }
 
     public function delete($nisn)
     {
         Student::where('nisn', $nisn)->update([
-            'already_login' => false
+            'already_login' => false,
         ]);
 
         return redirect('/admin/active-account')->with('success', 'Data Berhasil Dihapus');

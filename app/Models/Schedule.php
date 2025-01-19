@@ -4,14 +4,13 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use PhpParser\Builder\Class_;
 
 class Schedule extends Model
 {
     use HasFactory;
 
     protected $guarded = [
-        'id'
+        'id',
     ];
 
     public function teacher()

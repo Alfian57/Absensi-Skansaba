@@ -3,11 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Helper;
-use App\Models\Schedule;
 use App\Http\Requests\StoreScheduleRequest;
 use App\Http\Requests\UpdateScheduleRequest;
 use App\Models\Grade;
 use App\Models\OtherData;
+use App\Models\Schedule;
 use App\Models\Subject;
 use App\Models\Teacher;
 use Illuminate\Support\Facades\Auth;
@@ -41,14 +41,14 @@ class ScheduleController extends Controller
         Helper::addHistory('/admin/schedules/create', 'Tambah Jadwal Mengajar');
 
         $days = OtherData::where('name', 'Hari Masuk')->first();
-        $days = explode(", ", $days->value);
+        $days = explode(', ', $days->value);
 
         $data = [
             'title' => 'Tambah Jadwal Pelajaran',
             'teachers' => Teacher::latest()->get(),
             'subjects' => Subject::latest()->get(),
             'days' => $days,
-            'grades' => Grade::latest()->get()
+            'grades' => Grade::latest()->get(),
         ];
 
         return view('schedule.create', $data);
@@ -57,7 +57,6 @@ class ScheduleController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \App\Http\Requests\StoreScheduleRequest  $request
      * @return \Illuminate\Http\Response
      */
     public function store(StoreScheduleRequest $request)
@@ -82,7 +81,6 @@ class ScheduleController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  \App\Models\Schedule  $schedule
      * @return \Illuminate\Http\Response
      */
     public function show(Schedule $schedule)
@@ -93,15 +91,14 @@ class ScheduleController extends Controller
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  \App\Models\Schedule  $schedule
      * @return \Illuminate\Http\Response
      */
     public function edit(Schedule $schedule)
     {
-        Helper::addHistory('/admin/schedules/' . $schedule->id . '/edit', 'Ubah Jadwal Mengajar');
+        Helper::addHistory('/admin/schedules/'.$schedule->id.'/edit', 'Ubah Jadwal Mengajar');
 
         $days = OtherData::where('name', 'Hari Masuk')->first();
-        $days = explode(", ", $days->value);
+        $days = explode(', ', $days->value);
 
         $data = [
             'title' => 'Edit Data Jadwal Pelajaran',
@@ -109,7 +106,7 @@ class ScheduleController extends Controller
             'teachers' => Teacher::latest()->get(),
             'subjects' => Subject::latest()->get(),
             'days' => $days,
-            'grades' => Grade::latest()->get()
+            'grades' => Grade::latest()->get(),
         ];
 
         return view('schedule.edit', $data);
@@ -118,8 +115,6 @@ class ScheduleController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param  \App\Http\Requests\UpdateScheduleRequest  $request
-     * @param  \App\Models\Schedule  $schedule
      * @return \Illuminate\Http\Response
      */
     public function update(UpdateScheduleRequest $request, Schedule $schedule)
@@ -144,7 +139,6 @@ class ScheduleController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \App\Models\Schedule  $schedule
      * @return \Illuminate\Http\Response
      */
     public function destroy(Schedule $schedule)
@@ -168,7 +162,7 @@ class ScheduleController extends Controller
 
         $isNotEmpty = false;
         foreach ($schedules as $key => $schedule) {
-            if (!$schedule->isEmpty()) {
+            if (! $schedule->isEmpty()) {
                 $isNotEmpty = true;
             }
         }
@@ -176,7 +170,7 @@ class ScheduleController extends Controller
         return view('schedule.myschedule', [
             'title' => 'My Schedule',
             'schedules' => $schedules,
-            'isNotEmpty' => $isNotEmpty
+            'isNotEmpty' => $isNotEmpty,
         ]);
     }
 }

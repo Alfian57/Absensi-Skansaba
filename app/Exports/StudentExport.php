@@ -17,10 +17,10 @@ class StudentExport implements FromCollection, WithHeadings
         $students = Student::select('nisn', 'nis', 'name', 'gender', 'address')->get();
 
         foreach ($students as $student) {
-            if ($student->gender == "0") {
-                $student->gender = "Laki-laki";
+            if ($student->gender == '0') {
+                $student->gender = 'Laki-laki';
             } else {
-                $student->gender = "Perempuan";
+                $student->gender = 'Perempuan';
             }
         }
 
@@ -29,6 +29,6 @@ class StudentExport implements FromCollection, WithHeadings
 
     public function headings(): array
     {
-        return ['NISN', 'NIS', 'Nama', "Jenis Kelamin", "Alamat"];
+        return ['NISN', 'NIS', 'Nama', 'Jenis Kelamin', 'Alamat'];
     }
 }

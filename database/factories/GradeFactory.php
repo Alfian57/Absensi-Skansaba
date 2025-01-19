@@ -18,7 +18,7 @@ class GradeFactory extends Factory
     {
         return [
             'name' => $this->faker->unique->sentence(1),
-            'slug' => $this->faker->unique->slug()
+            'slug' => $this->faker->unique->slug(),
         ];
     }
 }

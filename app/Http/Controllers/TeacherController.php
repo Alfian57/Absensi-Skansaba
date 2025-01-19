@@ -4,13 +4,11 @@ namespace App\Http\Controllers;
 
 use App\Exports\TeacherExport;
 use App\Helper;
-use App\Models\Teacher;
 use App\Http\Requests\StoreTeacherRequest;
 use App\Http\Requests\UpdateTeacherRequest;
-use App\Models\Grade;
 use App\Models\HomeroomTeacher;
 use App\Models\Schedule;
-use Illuminate\Support\Facades\Hash;
+use App\Models\Teacher;
 use Illuminate\Support\Facades\Storage;
 use Maatwebsite\Excel\Facades\Excel;
 
@@ -51,13 +49,13 @@ class TeacherController extends Controller
         $data = [
             'title' => 'Tambah Guru',
         ];
+
         return view('teacher.create', $data);
     }
 
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \App\Http\Requests\StoreTeacherRequest  $request
      * @return \Illuminate\Http\Response
      */
     public function store(StoreTeacherRequest $request)
@@ -66,12 +64,12 @@ class TeacherController extends Controller
             'nip' => 'required|digits:18|unique:teachers',
             'name' => 'required|max:255',
             'email' => 'required|email|unique:teachers',
-            //'password' => 'required|min:8',
-            'profile_pic' => 'image|file|max:10000'
+            // 'password' => 'required|min:8',
+            'profile_pic' => 'image|file|max:10000',
         ]);
-        $validatedData['password'] = "$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi";
+        $validatedData['password'] = '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi';
         if ($request->profile_pic) {
-            $validatedData['profile_pic'] = $request->file('profile_pic')->store('teacher_profile_pic');
+            $validatedData['profile_pic'] = $request->file('profile_pic')->store('teacher_profile_pic', 'public');
         }
 
         Teacher::create($validatedData);
@@ -82,42 +80,40 @@ class TeacherController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  \App\Models\Teacher  $teacher
      * @return \Illuminate\Http\Response
      */
     public function show(Teacher $teacher)
     {
-        Helper::addHistory('/admin/teachers/' . $teacher->nip, 'Detail Guru');
+        Helper::addHistory('/admin/teachers/'.$teacher->nip, 'Detail Guru');
 
         $data = [
-            'title' => 'Guru ' . $teacher->name,
+            'title' => 'Guru '.$teacher->name,
             'teacher' => $teacher,
         ];
+
         return view('teacher.show', $data);
     }
 
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  \App\Models\Teacher  $teacher
      * @return \Illuminate\Http\Response
      */
     public function edit(Teacher $teacher)
     {
-        Helper::addHistory('/admin/teachers/' . $teacher->nip . '/edit', 'Ubah Guru');
+        Helper::addHistory('/admin/teachers/'.$teacher->nip.'/edit', 'Ubah Guru');
 
         $data = [
             'title' => 'Edit Data Guru',
             'teacher' => $teacher,
         ];
+
         return view('teacher.edit', $data);
     }
 
     /**
      * Update the specified resource in storage.
      *
-     * @param  \App\Http\Requests\UpdateTeacherRequest  $request
-     * @param  \App\Models\Teacher  $teacher
      * @return \Illuminate\Http\Response
      */
     public function update(UpdateTeacherRequest $request, Teacher $teacher)
@@ -126,32 +122,32 @@ class TeacherController extends Controller
             'nip' => 'required|digits:18',
             'name' => 'required|max:255',
             'email' => 'required|email',
-            'profile_pic' => 'image|file|max:10000'
+            'profile_pic' => 'image|file|max:10000',
         ]);
 
         $validatedData['password'] = $request->password;
 
         if ($request->old_nip !== $request->nip) {
             $validatedData['nip'] = $request->validate([
-                'nip' => 'unique:teachers'
+                'nip' => 'unique:teachers',
             ]);
             $validatedData['nip'] = $request->nip;
         }
 
         if ($request->old_email !== $request->email) {
             $validatedData['email'] = $request->validate([
-                'email' => 'unique:teachers'
+                'email' => 'unique:teachers',
             ]);
             $validatedData['email'] = $request->email;
         }
 
-        if ($request->deleteImage == "true") {
+        if ($request->deleteImage == 'true') {
             Storage::delete($request->old_profile_pic);
             $validatedData['profile_pic'] = null;
         } else {
             if ($request->profile_pic !== $request->old_profile_pic) {
                 if ($request->profile_pic) {
-                    $validatedData['profile_pic'] = $request->file('profile_pic')->store('teacher_profile_pic');
+                    $validatedData['profile_pic'] = $request->file('profile_pic')->store('teacher_profile_pic', 'public');
                 }
                 if ($request->old_profile_pic) {
                     Storage::delete($request->old_profile_pic);
@@ -169,7 +165,6 @@ class TeacherController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \App\Models\Teacher  $teacher
      * @return \Illuminate\Http\Response
      */
     public function destroy(Teacher $teacher)
@@ -182,15 +177,16 @@ class TeacherController extends Controller
         $schedules = Schedule::where('teacher_id', $teacher->id)->count();
 
         if ($homeroomTeachers > 0) {
-            return redirect('/admin/grades')->with('sAError', 'Guru Ini Digunakan Oleh ' . $homeroomTeachers . ' Data Wali Kelas. Silahkan Edit Data Wali Kelas Terlebih Dahulu');
+            return redirect('/admin/grades')->with('sAError', 'Guru Ini Digunakan Oleh '.$homeroomTeachers.' Data Wali Kelas. Silahkan Edit Data Wali Kelas Terlebih Dahulu');
         }
 
         if ($schedules > 0) {
-            return redirect('/admin/grades')->with('sAError', 'Guru Ini Digunakan Oleh ' . $schedules . ' Jadwal Mengajar. Silahkan Edit Data Jadwal Mengajar Terlebih Dahulu');
+            return redirect('/admin/grades')->with('sAError', 'Guru Ini Digunakan Oleh '.$schedules.' Jadwal Mengajar. Silahkan Edit Data Jadwal Mengajar Terlebih Dahulu');
         }
 
         Teacher::destroy($teacher->id);
-        return redirect('/admin/teachers')->with('success', 'Data Guru ' . $teacher->name . ' Berhasil Dihapus');
+
+        return redirect('/admin/teachers')->with('success', 'Data Guru '.$teacher->name.' Berhasil Dihapus');
     }
 
     public function exportExcel()

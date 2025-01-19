@@ -20,14 +20,14 @@ class AuthController extends Controller
         ]);
         if ($validate->fails()) {
             $data = [
-                'message'    => 'Validasi Gagal',
-                'error'       => $validate->errors(),
-                'data'      => null
+                'message' => 'Validasi Gagal',
+                'error' => $validate->errors(),
+                'data' => null,
             ];
 
             return response()->json($data, 402);
         } else {
-            $credential   = request(['nis', 'password']);
+            $credential = request(['nis', 'password']);
 
             if (Auth::guard('student')->attempt($credential)) {
                 $studentResponse = Student::where('nis', $request->nis)
@@ -38,11 +38,12 @@ class AuthController extends Controller
                     ->first();
 
                 if ($studentStatus->already_login == true) {
-                    $data  = [
-                        'message'   => 'Akun Sudah Digunakan Di Perangkat Lain',
-                        'errors'    => null,
-                        'data'      => null
+                    $data = [
+                        'message' => 'Akun Sudah Digunakan Di Perangkat Lain',
+                        'errors' => null,
+                        'data' => null,
                     ];
+
                     return response()->json($data, 401);
                 }
 
@@ -51,7 +52,7 @@ class AuthController extends Controller
                 $studentResponse->grade = $grade->name;
 
                 Student::where('id', $studentResponse->id)->update([
-                    'already_login' => true
+                    'already_login' => true,
                 ]);
 
                 $token = $studentResponse->createToken('token')->plainTextToken;
@@ -62,16 +63,18 @@ class AuthController extends Controller
                     'data' => [
                         'student' => $studentResponse,
                         'access_token' => $token,
-                        'token_type' => 'Bearer'
-                    ]
+                        'token_type' => 'Bearer',
+                    ],
                 ];
+
                 return response()->json($data, 200);
             } else {
-                $data  = [
-                    'message'   => 'NIS atau Password Salah',
-                    'errors'    => null,
-                    'data'      => null
+                $data = [
+                    'message' => 'NIS atau Password Salah',
+                    'errors' => null,
+                    'data' => null,
                 ];
+
                 return response()->json($data, 401);
             }
         }
@@ -85,11 +88,12 @@ class AuthController extends Controller
         // Auth::guard('student')->tokens()->where('id', $user->currentAccessToken()->id)->delete();
         $request->user()->currentAccessToken()->delete();
         // Auth::guard('student')->user()->tokens()->delete();
-        $data   = [
-            'message'       => 'Logout Berhasil',
-            'errors'    => null,
-            'data'      => null
+        $data = [
+            'message' => 'Logout Berhasil',
+            'errors' => null,
+            'data' => null,
         ];
+
         return response()->json($data, 200);
     }
 

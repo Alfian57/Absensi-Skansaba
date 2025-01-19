@@ -2,9 +2,6 @@
 
 namespace Database\Factories;
 
-use App\Models\Attendance;
-use App\Models\Student;
-use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**

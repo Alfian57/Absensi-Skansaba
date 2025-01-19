@@ -3,7 +3,6 @@
 namespace Database\Seeders;
 
 use App\Models\Subject;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Str;
 
@@ -32,7 +31,7 @@ class SubjectSeeder extends Seeder
         foreach ($data as $item) {
             Subject::create([
                 'name' => $item,
-                'slug' => Str::slug($item)
+                'slug' => Str::slug($item),
             ]);
         }
     }

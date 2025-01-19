@@ -3,14 +3,13 @@
 namespace App\Http\Controllers;
 
 use App\Helper;
-use App\Models\Grade;
 use App\Http\Requests\StoreGradeRequest;
 use App\Http\Requests\UpdateGradeRequest;
+use App\Models\Grade;
 use App\Models\HomeroomTeacher;
 use App\Models\Schedule;
 use App\Models\Student;
 use Illuminate\Support\Str;
-use RealRashid\SweetAlert\Facades\Alert;
 
 class GradeController extends Controller
 {
@@ -25,7 +24,7 @@ class GradeController extends Controller
 
         $data = [
             'title' => 'Semua Kelas',
-            'grades' => Grade::latest()->get()
+            'grades' => Grade::latest()->get(),
         ];
 
         return view('grade.index', $data);
@@ -43,19 +42,19 @@ class GradeController extends Controller
         $data = [
             'title' => 'Semua Kelas',
         ];
+
         return view('grade.create', $data);
     }
 
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \App\Http\Requests\StoreGradeRequest  $request
      * @return \Illuminate\Http\Response
      */
     public function store(StoreGradeRequest $request)
     {
         $validatedData = $request->validate([
-            'name' => 'required|max:255|unique:grades'
+            'name' => 'required|max:255|unique:grades',
         ]);
 
         $validatedData['slug'] = Str::slug($request->name);
@@ -68,7 +67,6 @@ class GradeController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  \App\Models\Grade  $grade
      * @return \Illuminate\Http\Response
      */
     public function show(Grade $grade)
@@ -79,25 +77,23 @@ class GradeController extends Controller
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  \App\Models\Grade  $grade
      * @return \Illuminate\Http\Response
      */
     public function edit(Grade $grade)
     {
-        Helper::addHistory('/admin/grades/' . $grade->slug . '/edit', 'Ubah Kelas');
+        Helper::addHistory('/admin/grades/'.$grade->slug.'/edit', 'Ubah Kelas');
 
         $data = [
             'title' => 'Edit Data Kelas',
-            'grade' => $grade
+            'grade' => $grade,
         ];
+
         return view('grade.edit', $data);
     }
 
     /**
      * Update the specified resource in storage.
      *
-     * @param  \App\Http\Requests\UpdateGradeRequest  $request
-     * @param  \App\Models\Grade  $grade
      * @return \Illuminate\Http\Response
      */
     public function update(UpdateGradeRequest $request, Grade $grade)
@@ -106,7 +102,7 @@ class GradeController extends Controller
             return back()->with('nameError', 'Data Not Changed');
         } else {
             $validatedData = $request->validate([
-                'name' => 'required|max:255|unique:grades'
+                'name' => 'required|max:255|unique:grades',
             ]);
 
             $validatedData['slug'] = Str::slug($request->name);
@@ -120,7 +116,6 @@ class GradeController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \App\Models\Grade  $grade
      * @return \Illuminate\Http\Response
      */
     public function destroy(Grade $grade)
@@ -130,18 +125,19 @@ class GradeController extends Controller
         $homeroomTeacher = HomeroomTeacher::where('grade_id', $grade->id)->count();
 
         if ($students > 0) {
-            return redirect('/admin/grades')->with('sAError', 'Kelas Ini Digunakan Oleh ' . $students . ' Siswa. Silahkan Edit Data Siswa Terlebih Dahulu');
+            return redirect('/admin/grades')->with('sAError', 'Kelas Ini Digunakan Oleh '.$students.' Siswa. Silahkan Edit Data Siswa Terlebih Dahulu');
         }
 
         if ($schedules > 0) {
-            return redirect('/admin/grades')->with('sAError', 'Kelas Ini Digunakan Oleh ' . $schedules . ' Jadwal. Silahkan Edit Data Jadwal Terlebih Dahulu');
+            return redirect('/admin/grades')->with('sAError', 'Kelas Ini Digunakan Oleh '.$schedules.' Jadwal. Silahkan Edit Data Jadwal Terlebih Dahulu');
         }
 
         if ($homeroomTeacher > 0) {
-            return redirect('/admin/grades')->with('sAError', 'Kelas Ini Digunakan Oleh ' . $homeroomTeacher . ' Wali Kelas. Silahkan Edit Data Wali Kelas Terlebih Dahulu');
+            return redirect('/admin/grades')->with('sAError', 'Kelas Ini Digunakan Oleh '.$homeroomTeacher.' Wali Kelas. Silahkan Edit Data Wali Kelas Terlebih Dahulu');
         }
 
         Grade::destroy($grade->id);
-        return redirect('/admin/grades')->with('success', 'Data Kelas ' . $grade->name . ' Berhasil Dihapus');
+
+        return redirect('/admin/grades')->with('success', 'Data Kelas '.$grade->name.' Berhasil Dihapus');
     }
 }

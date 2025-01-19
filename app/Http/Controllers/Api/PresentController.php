@@ -17,22 +17,22 @@ class PresentController extends Controller
 {
     public function store(Request $request)
     {
-        //Validasi (Start)
+        // Validasi (Start)
         $id = Auth::guard('sanctum')->user()->id;
         $validator = Validator::make($request->all(), [
-            'key' => 'required'
+            'key' => 'required',
         ]);
 
         if ($validator->fails()) {
-            $response   = [
-                'message'       => 'Validasi Error',
-                'errors'    => $validator->errors(),
-                'data'      => null
+            $response = [
+                'message' => 'Validasi Error',
+                'errors' => $validator->errors(),
+                'data' => null,
             ];
 
             return response()->json($response);
         }
-        //Validasi (End)
+        // Validasi (End)
 
         $waktuMulai = OtherData::where('name', 'Waktu Absen Mulai')->first();
         $waktuMulai = $waktuMulai->value;
@@ -50,30 +50,30 @@ class PresentController extends Controller
         $now->setTimezone('Asia/Jakarta');
         $now = $now->toTimeString();
 
-        $keyMasuk = OtherData::where('name', "QR Absensi Masuk")->first();
-        $keyPulang = OtherData::where('name', "QR Absensi Pulang")->first();
+        $keyMasuk = OtherData::where('name', 'QR Absensi Masuk')->first();
+        $keyPulang = OtherData::where('name', 'QR Absensi Pulang')->first();
 
         try {
             if ($request->key == $keyMasuk->value) {
                 $student = Student::where('id', $id)->first();
-                if (!$student == null) {
+                if (! $student == null) {
                     $attendances = Attendance::where('student_id', $student->id)
-                        ->where('present_date', date("Y-m-d"))
+                        ->where('present_date', date('Y-m-d'))
                         ->first();
 
                     if ($attendances->desc != 'masuk' && $attendances->desc != 'terlambat' && $attendances->desc != 'masuk (bolos)') {
                         if (strtotime($now) < strtotime($waktuMulai) || strtotime($now) > strtotime($waktuBerakhir)) {
-                            $response   = [
-                                'message'       => 'Sesi Absensi Belum Dimulai Ataupun Berakhir',
-                                'errors'    => null,
-                                'data'      => null
+                            $response = [
+                                'message' => 'Sesi Absensi Belum Dimulai Ataupun Berakhir',
+                                'errors' => null,
+                                'data' => null,
                             ];
 
                             return response()->json($response);
                         }
 
                         $data['student_id'] = $student->id;
-                        $data['present_date'] = date("Y-m-d");
+                        $data['present_date'] = date('Y-m-d');
                         $data['present_time'] = $now;
 
                         if (strtotime($waktuTerlambat) > strtotime($now)) {
@@ -82,8 +82,7 @@ class PresentController extends Controller
                             $data['desc'] = 'terlambat';
                         }
 
-
-                        $id = Attendance::where('student_id', $data['student_id'])->where('present_date', date("Y-m-d"))->first();
+                        $id = Attendance::where('student_id', $data['student_id'])->where('present_date', date('Y-m-d'))->first();
                         $id = $id->id;
                         Attendance::where('id', $id)->update($data);
 
@@ -95,64 +94,68 @@ class PresentController extends Controller
 
                         $studentResponse->grade = $grade->name;
 
-                        if ($data['desc'] == "masuk") {
+                        if ($data['desc'] == 'masuk') {
                             $response = [
-                                'message'       => 'Berhasil Melakukan Absensi',
-                                'errors'    => null,
-                                'data'    => [
-                                    'student' => $studentResponse
+                                'message' => 'Berhasil Melakukan Absensi',
+                                'errors' => null,
+                                'data' => [
+                                    'student' => $studentResponse,
                                 ],
                             ];
+
                             return response()->json($response, 200);
                         } else {
                             $response = [
-                                'message'       => 'Terlambat Melakukan Absensi',
-                                'errors'    => null,
-                                'data'    => [
-                                    'student' => $studentResponse
+                                'message' => 'Terlambat Melakukan Absensi',
+                                'errors' => null,
+                                'data' => [
+                                    'student' => $studentResponse,
                                 ],
                             ];
+
                             return response()->json($response, 200);
                         }
                     } else {
                         $response = [
-                            'message'       => 'Anda Sudah Melakukan Absensi',
-                            'errors'    => null,
-                            'data'      => null
+                            'message' => 'Anda Sudah Melakukan Absensi',
+                            'errors' => null,
+                            'data' => null,
                         ];
+
                         return response()->json($response);
                     }
                 } else {
                     $response = [
-                        'message'       => 'ID Tidak Ditemukan',
-                        'errors'    => null,
-                        'data'      => null
+                        'message' => 'ID Tidak Ditemukan',
+                        'errors' => null,
+                        'data' => null,
                     ];
+
                     return response()->json($response);
                 }
-            } else if ($request->key == $keyPulang->value) {
+            } elseif ($request->key == $keyPulang->value) {
                 $student = Student::where('id', $id)->first();
-                if (!$student == null) {
+                if (! $student == null) {
                     $attendances = Attendance::where('student_id', $student->id)
-                        ->where('present_date', date("Y-m-d"))
+                        ->where('present_date', date('Y-m-d'))
                         ->first();
 
                     if ($attendances->return_time == null) {
                         if (strtotime($now) < strtotime($waktuPulang)) {
-                            $response   = [
-                                'message'       => 'Sesi Absensi Belum Dimulai Ataupun Berakhir',
-                                'errors'    => null,
-                                'data'      => null
+                            $response = [
+                                'message' => 'Sesi Absensi Belum Dimulai Ataupun Berakhir',
+                                'errors' => null,
+                                'data' => null,
                             ];
 
                             return response()->json($response);
                         }
 
                         if ($attendances->desc != 'masuk' && $attendances->desc != 'masuk (bolos)' && $attendances->desc != 'terlambat') {
-                            $response   = [
-                                'message'       => 'Anda Belum Melakukan Absensi Pagi',
-                                'errors'    => null,
-                                'data'      => null
+                            $response = [
+                                'message' => 'Anda Belum Melakukan Absensi Pagi',
+                                'errors' => null,
+                                'data' => null,
                             ];
 
                             return response()->json($response);
@@ -163,8 +166,7 @@ class PresentController extends Controller
                         $data['present_time'] = $attendances->present_time;
                         $data['return_time'] = $now;
 
-
-                        $id = Attendance::where('student_id', $data['student_id'])->where('present_date', date("Y-m-d"))->first();
+                        $id = Attendance::where('student_id', $data['student_id'])->where('present_date', date('Y-m-d'))->first();
                         $id = $id->id;
                         Attendance::where('id', $id)->update($data);
 
@@ -177,50 +179,55 @@ class PresentController extends Controller
                         $studentResponse->grade = $grade->name;
 
                         $response = [
-                            'message'       => 'Berhasil Melakukan Absensi Pulang',
-                            'errors'    => null,
-                            'data'    => [
-                                'student' => $studentResponse
+                            'message' => 'Berhasil Melakukan Absensi Pulang',
+                            'errors' => null,
+                            'data' => [
+                                'student' => $studentResponse,
                             ],
                         ];
+
                         return response()->json($response, 200);
                     } else {
                         $response = [
-                            'message'       => 'Anda Sudah Melakukan Absensi Pulang',
-                            'errors'    => null,
-                            'data'      => null
+                            'message' => 'Anda Sudah Melakukan Absensi Pulang',
+                            'errors' => null,
+                            'data' => null,
                         ];
+
                         return response()->json($response);
                     }
                 } else {
                     $response = [
-                        'message'       => 'ID Tidak Ditemukan',
-                        'errors'    => null,
-                        'data'      => null
+                        'message' => 'ID Tidak Ditemukan',
+                        'errors' => null,
+                        'data' => null,
                     ];
+
                     return response()->json($response);
                 }
             } else {
                 $response = [
-                    'message'       => 'QR Code Tidak Valid',
-                    'errors'    => null,
-                    'data'      => null
+                    'message' => 'QR Code Tidak Valid',
+                    'errors' => null,
+                    'data' => null,
                 ];
+
                 return response()->json($response);
             }
         } catch (Exception $e) {
             $response = [
-                'message'       => 'Tidak Bisa Melakukan Absensi Saat Ini',
-                'errors'    => $e->getMessage(),
-                'data'    => null,
+                'message' => 'Tidak Bisa Melakukan Absensi Saat Ini',
+                'errors' => $e->getMessage(),
+                'data' => null,
             ];
+
             return response()->json($response);
         }
     }
 
     public function getAttendances()
     {
-        $attendances = Attendance::latest()->where('present_date', date("Y-m-d"))
+        $attendances = Attendance::latest()->where('present_date', date('Y-m-d'))
             ->where('desc', '!=', 'alpha')->get();
 
         $response = [];
@@ -228,13 +235,13 @@ class PresentController extends Controller
         foreach ($attendances as $attendance) {
             $photo = null;
             if ($attendance->student->profile_pic != null) {
-                $photo = asset('storage/' . $attendance->student->profile_pic);
+                $photo = asset('storage/'.$attendance->student->profile_pic);
             }
             $response[] = [
                 'name' => $attendance->student->name,
                 'grade' => $attendance->student->grade->name,
                 'photo' => $photo,
-                'desc' => $attendance->desc
+                'desc' => $attendance->desc,
             ];
         }
 
@@ -247,7 +254,7 @@ class PresentController extends Controller
 
         $students = Student::where('grade_id', $gradeResult->id)->pluck('id');
 
-        $attendances = Attendance::latest()->where('present_date', date("Y-m-d"))
+        $attendances = Attendance::latest()->where('present_date', date('Y-m-d'))
             ->where('desc', '!=', 'alpha')->whereIn('student_id', $students)->get();
 
         $response = [];
@@ -255,13 +262,13 @@ class PresentController extends Controller
         foreach ($attendances as $attendance) {
             $photo = null;
             if ($attendance->student->profile_pic != null) {
-                $photo = asset('storage/' . $attendance->student->profile_pic);
+                $photo = asset('storage/'.$attendance->student->profile_pic);
             }
             $response[] = [
                 'name' => $attendance->student->name,
                 'grade' => $attendance->student->grade->name,
                 'photo' => $photo,
-                'desc' => $attendance->desc
+                'desc' => $attendance->desc,
             ];
         }
 
@@ -270,7 +277,7 @@ class PresentController extends Controller
 
     public function getAttendancesHome()
     {
-        $attendances = Attendance::latest()->where('present_date', date("Y-m-d"))
+        $attendances = Attendance::latest()->where('present_date', date('Y-m-d'))
             ->where('return_time', '!=', null)->get();
 
         $response = [];
@@ -278,13 +285,13 @@ class PresentController extends Controller
         foreach ($attendances as $attendance) {
             $photo = null;
             if ($attendance->student->profile_pic != null) {
-                $photo = asset('storage/' . $attendance->student->profile_pic);
+                $photo = asset('storage/'.$attendance->student->profile_pic);
             }
             $response[] = [
                 'name' => $attendance->student->name,
                 'grade' => $attendance->student->grade->name,
                 'photo' => $photo,
-                'desc' => $attendance->desc
+                'desc' => $attendance->desc,
             ];
         }
 
@@ -297,7 +304,7 @@ class PresentController extends Controller
 
         $students = Student::where('grade_id', $gradeResult->id)->pluck('id');
 
-        $attendances = Attendance::latest()->where('present_date', date("Y-m-d"))
+        $attendances = Attendance::latest()->where('present_date', date('Y-m-d'))
             ->where('desc', '!=', null)->whereIn('student_id', $students)->get();
 
         $response = [];
@@ -305,13 +312,13 @@ class PresentController extends Controller
         foreach ($attendances as $attendance) {
             $photo = null;
             if ($attendance->student->profile_pic != null) {
-                $photo = asset('storage/' . $attendance->student->profile_pic);
+                $photo = asset('storage/'.$attendance->student->profile_pic);
             }
             $response[] = [
                 'name' => $attendance->student->name,
                 'grade' => $attendance->student->grade->name,
                 'photo' => $photo,
-                'desc' => $attendance->desc
+                'desc' => $attendance->desc,
             ];
         }
 
@@ -324,42 +331,46 @@ class PresentController extends Controller
 
         if ($student == null) {
             $response = [
-                'message'       => 'Murid Tidak Ditemukan',
-                'errors'    => null,
-                'data'      => null
+                'message' => 'Murid Tidak Ditemukan',
+                'errors' => null,
+                'data' => null,
             ];
+
             return response()->json($response);
         }
 
-        if (!request('month')) {
+        if (! request('month')) {
             $response = [
-                'message'       => "Masukan Field 'month'",
-                'errors'    => null,
-                'data'      => null
+                'message' => "Masukan Field 'month'",
+                'errors' => null,
+                'data' => null,
             ];
+
             return response()->json($response);
         }
-        if (!request('year')) {
+        if (! request('year')) {
             $response = [
-                'message'       => "Masukan Field 'year'",
-                'errors'    => null,
-                'data'      => null
+                'message' => "Masukan Field 'year'",
+                'errors' => null,
+                'data' => null,
             ];
+
             return response()->json($response);
         }
 
         $attendance = Attendance::where('student_id', $student->id)
-            ->whereRaw('MONTH(present_date)=' . request('month'))
-            ->whereRaw('YEAR(present_date)=' . request('year'))
+            ->whereRaw('MONTH(present_date)='.request('month'))
+            ->whereRaw('YEAR(present_date)='.request('year'))
             ->select('desc', 'present_date', 'present_time')
             ->orderBy('present_date', 'ASC')
             ->get();
 
         $response = [
-            'message'       => 'Berhasil Mendapatkan Rekap Absensi',
-            'errors'    => null,
-            'data'      => $attendance
+            'message' => 'Berhasil Mendapatkan Rekap Absensi',
+            'errors' => null,
+            'data' => $attendance,
         ];
+
         return response()->json($response);
     }
 }

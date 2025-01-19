@@ -11,10 +11,10 @@ class Helper
     {
         $history = session('history');
 
-        if (sizeof($history) == 0) {
+        if (count($history) == 0) {
             Helper::deleteArray($history, $route, $name);
         } else {
-            if ($history[sizeof($history) - 1]['name'] !== $name) {
+            if ($history[count($history) - 1]['name'] !== $name) {
                 Helper::deleteArray($history, $route, $name);
             }
         }
@@ -22,9 +22,9 @@ class Helper
 
     public static function deleteArray($history, $route, $name)
     {
-        if (sizeof($history) >= 5) {
-            for ($i = 0; $i < sizeof($history); $i++) {
-                if ($i == sizeof($history) - 1) {
+        if (count($history) >= 5) {
+            for ($i = 0; $i < count($history); $i++) {
+                if ($i == count($history) - 1) {
                     unset($history[$i]);
                 } else {
                     $history[$i] = $history[$i + 1];
@@ -32,9 +32,9 @@ class Helper
             }
         }
 
-        $history[sizeof($history)] = [
+        $history[count($history)] = [
             'route' => $route,
-            'name' => $name
+            'name' => $name,
         ];
 
         session()->put('history', $history);
@@ -43,22 +43,22 @@ class Helper
     public static function getHariMasukForScheduling(): array
     {
         $days = OtherData::where('name', 'Hari Masuk')->first();
-        $days = explode(", ", $days->value);
+        $days = explode(', ', $days->value);
         $result = [];
         foreach ($days as $day) {
             if ($day == 'Senin') {
                 $result[] = Schedule::MONDAY;
-            } else if ($day == 'Selasa') {
+            } elseif ($day == 'Selasa') {
                 $result[] = Schedule::TUESDAY;
-            } else if ($day == 'Rabu') {
+            } elseif ($day == 'Rabu') {
                 $result[] = Schedule::WEDNESDAY;
-            } else if ($day == 'Kamis') {
+            } elseif ($day == 'Kamis') {
                 $result[] = Schedule::THURSDAY;
-            } else if ($day == 'Jumat') {
+            } elseif ($day == 'Jumat') {
                 $result[] = Schedule::FRIDAY;
-            } else if ($day == 'Sabtu') {
+            } elseif ($day == 'Sabtu') {
                 $result[] = Schedule::SATURDAY;
-            } else if ($day == 'Minggu') {
+            } elseif ($day == 'Minggu') {
                 $result[] = Schedule::SUNDAY;
             }
         }

@@ -2,13 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Grade;
-use App\Models\Teacher;
-use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 use RealRashid\SweetAlert\Facades\Alert;
 
@@ -29,6 +24,7 @@ class AuthController extends Controller
 
         if ($validator->fails()) {
             Alert::error('Login Gagal', 'Masih Ada Field Yang Kosong');
+
             return redirect('/admin/login')->with('email', $request->email);
         }
 
@@ -37,7 +33,7 @@ class AuthController extends Controller
             'password' => $request->password,
         ];
 
-        if ($request->role == "guru") {
+        if ($request->role == 'guru') {
             if (Auth::guard('teacher')->attempt($credentials)) {
                 $request->session()->regenerate();
                 session()->put('history', []);
@@ -54,6 +50,7 @@ class AuthController extends Controller
         }
 
         Alert::error('Login Gagal', 'Akun Tidak Ditemukan');
+
         return redirect('/admin/login')->with('email', $request->email);
     }
 

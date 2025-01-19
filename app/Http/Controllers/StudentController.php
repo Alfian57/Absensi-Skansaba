@@ -4,14 +4,14 @@ namespace App\Http\Controllers;
 
 use App\Exports\StudentExport;
 use App\Helper;
-use App\Models\Student;
 use App\Http\Requests\StoreStudentRequest;
 use App\Http\Requests\UpdateStudentRequest;
 use App\Models\Attendance;
 use App\Models\Grade;
+use App\Models\Student;
 use Carbon\Carbon;
-use Maatwebsite\Excel\Facades\Excel;
 use Illuminate\Support\Facades\Storage;
+use Maatwebsite\Excel\Facades\Excel;
 
 class StudentController extends Controller
 {
@@ -45,7 +45,7 @@ class StudentController extends Controller
         $data = [
             'title' => 'Semua Siswa',
             'students' => $students->limit(500)->get(),
-            'grades' => Grade::orderBy('name', "ASC")->get()
+            'grades' => Grade::orderBy('name', 'ASC')->get(),
         ];
 
         return view('student.index', $data);
@@ -62,15 +62,15 @@ class StudentController extends Controller
 
         $data = [
             'title' => 'Tambah Siswa',
-            'grades' => Grade::orderBy('name', "ASC")->get()
+            'grades' => Grade::orderBy('name', 'ASC')->get(),
         ];
+
         return view('student.create', $data);
     }
 
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \App\Http\Requests\StoreStudentRequest  $request
      * @return \Illuminate\Http\Response
      */
     public function store(StoreStudentRequest $request)
@@ -83,13 +83,13 @@ class StudentController extends Controller
             'gender' => 'required',
             'address' => 'required',
             'grade_id' => 'required',
-            'entry_year' => 'required|digits:4|integer|min:1900|max:' . (date('Y') + 1),
-            'profile_pic' => 'image|file|max:10000'
+            'entry_year' => 'required|digits:4|integer|min:1900|max:'.(date('Y') + 1),
+            'profile_pic' => 'image|file|max:10000',
         ]);
 
         $validatedData['password'] = '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi';
         if ($request->profile_pic) {
-            $validatedData['profile_pic'] = $request->file('profile_pic')->store('student_profile_pic');
+            $validatedData['profile_pic'] = $request->file('profile_pic')->store('student_profile_pic', 'public');
         }
 
         $student = Student::create($validatedData);
@@ -100,8 +100,8 @@ class StudentController extends Controller
         Attendance::create([
             'student_id' => $student->id,
             'desc' => 'alpha',
-            'present_date' => date("Y-m-d"),
-            'present_time' => $now
+            'present_date' => date('Y-m-d'),
+            'present_time' => $now,
         ]);
 
         return redirect('/admin/students')->with('success', 'Siswa Baru Berhasil Ditambahkan');
@@ -110,43 +110,41 @@ class StudentController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  \App\Models\Student  $student
      * @return \Illuminate\Http\Response
      */
     public function show(Student $student)
     {
-        Helper::addHistory('/admin/students/' . $student->nisn, 'Detail Siswa');
+        Helper::addHistory('/admin/students/'.$student->nisn, 'Detail Siswa');
 
         $data = [
-            'title' => 'Siswa ' . $student->name,
+            'title' => 'Siswa '.$student->name,
             'student' => $student,
         ];
+
         return view('student.show', $data);
     }
 
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  \App\Models\Student  $student
      * @return \Illuminate\Http\Response
      */
     public function edit(Student $student)
     {
-        Helper::addHistory('/admin/students/' . $student->nisn . '/edit', 'Ubah Siswa');
+        Helper::addHistory('/admin/students/'.$student->nisn.'/edit', 'Ubah Siswa');
 
         $data = [
             'title' => 'Edit Data Siswa',
             'student' => $student,
-            'grades' => Grade::orderBy('name', "ASC")->get()
+            'grades' => Grade::orderBy('name', 'ASC')->get(),
         ];
+
         return view('student.edit', $data);
     }
 
     /**
      * Update the specified resource in storage.
      *
-     * @param  \App\Http\Requests\UpdateStudentRequest  $request
-     * @param  \App\Models\Student  $student
      * @return \Illuminate\Http\Response
      */
     public function update(UpdateStudentRequest $request, Student $student)
@@ -159,31 +157,31 @@ class StudentController extends Controller
             'gender' => 'required',
             'address' => 'required',
             'grade_id' => 'required',
-            'entry_year' => 'required|digits:4|integer|min:1900|max:' . (date('Y') + 1),
-            'profile_pic' => 'image|file|max:10000'
+            'entry_year' => 'required|digits:4|integer|min:1900|max:'.(date('Y') + 1),
+            'profile_pic' => 'image|file|max:10000',
         ]);
 
         if ($request->old_nisn !== $request->nisn) {
             $validatedData['nisn'] = $request->validate([
-                'nisn' => 'unique:students'
+                'nisn' => 'unique:students',
             ]);
             $validatedData['nisn'] = $request->nisn;
         }
 
         if ($request->old_nis !== $request->nis) {
             $validatedData['nis'] = $request->validate([
-                'nis' => 'unique:students'
+                'nis' => 'unique:students',
             ]);
             $validatedData['nis'] = $request->nis;
         }
 
-        if ($request->deleteImage == "true") {
+        if ($request->deleteImage == 'true') {
             Storage::delete($request->old_profile_pic);
             $validatedData['profile_pic'] = null;
         } else {
             if ($request->profile_pic !== $request->old_profile_pic) {
                 if ($request->profile_pic) {
-                    $validatedData['profile_pic'] = $request->file('profile_pic')->store('student_profile_pic');
+                    $validatedData['profile_pic'] = $request->file('profile_pic')->store('student_profile_pic', 'public');
                 }
                 if ($request->old_profile_pic) {
                     Storage::delete($request->old_profile_pic);
@@ -203,7 +201,6 @@ class StudentController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \App\Models\Student  $student
      * @return \Illuminate\Http\Response
      */
     public function destroy(Student $student)
@@ -214,7 +211,7 @@ class StudentController extends Controller
 
         Student::destroy($student->id);
 
-        return redirect('/admin/students')->with('success', 'Data Siswa ' . $student->name . ' Berhasil Dihapus');
+        return redirect('/admin/students')->with('success', 'Data Siswa '.$student->name.' Berhasil Dihapus');
     }
 
     public function exportExcel()

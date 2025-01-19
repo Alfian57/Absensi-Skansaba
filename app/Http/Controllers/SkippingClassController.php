@@ -25,7 +25,7 @@ class SkippingClassController extends Controller
         Helper::addHistory('/admin/skippingClass', 'Siswa Bolos');
 
         $attendances = Attendance::whereIn('desc', ['masuk', 'terlambat', 'masuk (bolos)'])
-            ->where('present_date', date("Y-m-d"))
+            ->where('present_date', date('Y-m-d'))
             ->pluck('student_id');
 
         if ($attendances->isEmpty()) {
@@ -34,10 +34,9 @@ class SkippingClassController extends Controller
             $studentsId = Student::whereIn('id', $attendances)->pluck('id');
         }
 
-
         $data = [
-            'title' => "Siswa Bolos",
-            'skippingClasses' => SkippingClass::whereIn('student_id', $studentsId)->with('subject', 'student')->get()
+            'title' => 'Siswa Bolos',
+            'skippingClasses' => SkippingClass::whereIn('student_id', $studentsId)->with('subject', 'student')->get(),
         ];
 
         return view('skippingClass.index', $data);
@@ -50,14 +49,14 @@ class SkippingClassController extends Controller
      */
     public function create()
     {
-        $attendances = Attendance::where('present_date', date("Y-m-d"))
+        $attendances = Attendance::where('present_date', date('Y-m-d'))
             ->whereIn('desc', ['masuk', 'terlambat', 'masuk (bolos)'])
             ->pluck('student_id');
 
         $data = [
-            'title' => "Tambah Siswa Bolos",
+            'title' => 'Tambah Siswa Bolos',
             'students' => Student::whereIn('id', $attendances)->get(),
-            'subjects' => Subject::latest()->get()
+            'subjects' => Subject::latest()->get(),
         ];
 
         return view('skippingClass.create', $data);
@@ -66,7 +65,6 @@ class SkippingClassController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
     public function store(Request $request)
@@ -79,6 +77,7 @@ class SkippingClassController extends Controller
         SkippingClass::create($validatedData);
 
         Alert::success('Berhasil', 'Berhasil Menambahkan Data');
+
         return redirect('/admin/skippingClass');
     }
 
@@ -107,7 +106,6 @@ class SkippingClassController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
@@ -131,12 +129,12 @@ class SkippingClassController extends Controller
 
     public function exportExcel()
     {
-        if (!request('grade') || !request('date')) {
+        if (! request('grade') || ! request('date')) {
             return redirect()->back();
         }
 
         $grade = Grade::where('slug', request('grade'))->first();
-        $fileName = "Rekap Siswa Bolos Kelas $grade->name | " . request('date') . ".xlsx";
+        $fileName = "Rekap Siswa Bolos Kelas $grade->name | ".request('date').'.xlsx';
 
         return Excel::download(new SkippingClassExport(request('grade'), request('date')), $fileName);
     }

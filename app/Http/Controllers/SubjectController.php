@@ -3,10 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Helper;
-use App\Models\Subject;
 use App\Http\Requests\StoreSubjectRequest;
 use App\Http\Requests\UpdateSubjectRequest;
-use App\Models\Grade;
+use App\Models\Subject;
 use Illuminate\Support\Str;
 
 class SubjectController extends Controller
@@ -53,13 +52,12 @@ class SubjectController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \App\Http\Requests\StoreSubjectRequest  $request
      * @return \Illuminate\Http\Response
      */
     public function store(StoreSubjectRequest $request)
     {
         $validatedData = $request->validate([
-            'name' => 'required|unique:subjects|max:255'
+            'name' => 'required|unique:subjects|max:255',
         ]);
 
         $validatedData['slug'] = Str::slug($request->name);
@@ -72,7 +70,6 @@ class SubjectController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  \App\Models\Subject  $subject
      * @return \Illuminate\Http\Response
      */
     public function show(Subject $subject)
@@ -83,12 +80,11 @@ class SubjectController extends Controller
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  \App\Models\Subject  $subject
      * @return \Illuminate\Http\Response
      */
     public function edit(Subject $subject)
     {
-        Helper::addHistory('/admin/subjects/' . $subject->slug . '/edit', 'Ubah Mata Pelajaran');
+        Helper::addHistory('/admin/subjects/'.$subject->slug.'/edit', 'Ubah Mata Pelajaran');
 
         $data = [
             'title' => 'Edit Data Mata Pelajaran',
@@ -101,8 +97,6 @@ class SubjectController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param  \App\Http\Requests\UpdateSubjectRequest  $request
-     * @param  \App\Models\Subject  $subject
      * @return \Illuminate\Http\Response
      */
     public function update(UpdateSubjectRequest $request, Subject $subject)
@@ -111,7 +105,7 @@ class SubjectController extends Controller
             return back()->with('nameError', 'Data Not Changed');
         } else {
             $validatedData = $request->validate([
-                'name' => 'required|max:255|unique:subjects'
+                'name' => 'required|max:255|unique:subjects',
             ]);
 
             $validatedData['slug'] = Str::slug($request->name);
@@ -125,13 +119,12 @@ class SubjectController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \App\Models\Subject  $subject
      * @return \Illuminate\Http\Response
      */
     public function destroy(Subject $subject)
     {
         Subject::destroy($subject->id);
 
-        return redirect('/admin/subjects')->with('success', 'Mata Pelajaran ' . $subject->name . ' Berhasil Dihapus');
+        return redirect('/admin/subjects')->with('success', 'Mata Pelajaran '.$subject->name.' Berhasil Dihapus');
     }
 }

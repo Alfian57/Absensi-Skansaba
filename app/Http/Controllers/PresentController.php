@@ -11,7 +11,7 @@ class PresentController extends Controller
 {
     public function index()
     {
-        $attendances = Attendance::latest()->where('present_date', date("Y-m-d"))
+        $attendances = Attendance::latest()->where('present_date', date('Y-m-d'))
             ->where('desc', '!=', 'alpha');
 
         if (request('grade')) {
@@ -24,8 +24,8 @@ class PresentController extends Controller
 
         $data = [
             'attendances' => $attendances->get(),
-            'qr' => OtherData::where('name', "QR Absensi Masuk")->first(),
-            'grades' => Grade::latest()->get()
+            'qr' => OtherData::where('name', 'QR Absensi Masuk')->first(),
+            'grades' => Grade::latest()->get(),
         ];
 
         return view('present.index', $data);
@@ -33,7 +33,7 @@ class PresentController extends Controller
 
     public function returnHome()
     {
-        $attendances = Attendance::latest()->where('present_date', date("Y-m-d"))
+        $attendances = Attendance::latest()->where('present_date', date('Y-m-d'))
             ->where('return_time', '!=', null);
 
         if (request('grade')) {
@@ -46,8 +46,8 @@ class PresentController extends Controller
 
         $data = [
             'attendances' => $attendances->get(),
-            'qr' => OtherData::where('name', "QR Absensi Pulang")->first(),
-            'grades' => Grade::latest()->get()
+            'qr' => OtherData::where('name', 'QR Absensi Pulang')->first(),
+            'grades' => Grade::latest()->get(),
         ];
 
         return view('present.index', $data);

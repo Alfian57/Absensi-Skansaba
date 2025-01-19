@@ -2,10 +2,10 @@
 
 use App\Http\Controllers\ActiveAccountController;
 use App\Http\Controllers\AttendanceController;
+use App\Http\Controllers\AuthController;
 use App\Http\Controllers\GradeController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\HomeroomTeacherController;
-use App\Http\Controllers\AuthController;
 use App\Http\Controllers\MeController;
 use App\Http\Controllers\OtherDataController;
 use App\Http\Controllers\PresentController;
@@ -34,10 +34,9 @@ Route::get('/', function () {
 
 Route::get('/attendance', [PresentController::class, 'index']);
 Route::get('/attendance-home', [PresentController::class, 'returnHome']);
-//Route::post('/present', [PresentController::class, 'store']);
 
 Route::group(['prefix' => 'admin'], function () {
-    //ADMIN AND TEACHER
+    // ADMIN AND TEACHER
     Route::middleware('guest:user,teacher')->group(function () {
         Route::get('/login', [AuthController::class, 'login'])->name('login');
         Route::post('/login', [AuthController::class, 'authenticate']);
@@ -66,12 +65,12 @@ Route::group(['prefix' => 'admin'], function () {
         Route::resource('/skipping-class', SkippingClassController::class)->only(['index', 'create', 'store', 'destroy']);
     });
 
-    //TEACHER
+    // TEACHER
     Route::middleware(['auth:teacher'])->group(function () {
         Route::get('/myschedules', [ScheduleController::class, 'mySchedule']);
     });
 
-    //ADMIN
+    // ADMIN
     Route::middleware(['auth:user'])->group(function () {
         Route::get('/students/export', [StudentController::class, 'exportExcel']);
         Route::get('/teachers/export', [TeacherController::class, 'exportExcel']);

@@ -2,7 +2,6 @@
 
 namespace Database\Factories;
 
-use App\Models\Grade;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -26,7 +25,7 @@ class StudentFactory extends Factory
             'gender' => mt_rand(0, 1),
             'address' => $this->faker->address(),
             'grade_id' => mt_rand(1, 48),
-            'entry_year' => "2022"
+            'entry_year' => '2022',
         ];
     }
 }

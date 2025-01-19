@@ -18,6 +18,6 @@ class TeacherExport implements FromCollection, WithHeadings
 
     public function headings(): array
     {
-        return ['NIP', 'Nama', "Email"];
+        return ['NIP', 'Nama', 'Email'];
     }
 }

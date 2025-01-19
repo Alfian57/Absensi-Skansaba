@@ -5,9 +5,8 @@ namespace App\Http\Controllers;
 use App\Helper;
 use App\Http\Requests\UpdateOtherDataRequest;
 use App\Models\OtherData;
-use Illuminate\Support\Str;
-use App\Models\Grade;
 use Illuminate\Support\Facades\Artisan;
+use Illuminate\Support\Str;
 
 class OtherDataController extends Controller
 {
@@ -17,31 +16,32 @@ class OtherDataController extends Controller
 
         $data = [
             'title' => 'Lain-lain',
-            'otherDatas' => OtherData::orderBy('id', "ASC")->get(),
+            'otherDatas' => OtherData::orderBy('id', 'ASC')->get(),
         ];
+
         return view('otherData.index', $data);
     }
 
     public function edit($id)
     {
-        Helper::addHistory('/admin/other-data' . $id . "/edit", 'Ubah Data Lain');
+        Helper::addHistory('/admin/other-data'.$id.'/edit', 'Ubah Data Lain');
 
         $otherData = OtherData::where('id', $id)->first();
         if ($otherData == null) {
             return redirect('/admin/other-data');
         }
 
-        if ($otherData->name == "QR Absensi Masuk") {
+        if ($otherData->name == 'QR Absensi Masuk') {
             OtherData::where('name', 'QR Absensi Masuk')->update([
-                'value' => Str::random(20)
+                'value' => Str::random(20),
             ]);
 
             return redirect('/admin/other-data')->with('success', 'Data Berhasil Diperbarui');
         }
 
-        if ($otherData->name == "QR Absensi Pulang") {
+        if ($otherData->name == 'QR Absensi Pulang') {
             OtherData::where('name', 'QR Absensi Pulang')->update([
-                'value' => Str::random(20)
+                'value' => Str::random(20),
             ]);
 
             return redirect('/admin/other-data')->with('success', 'Data Berhasil Diperbarui');
@@ -51,6 +51,7 @@ class OtherDataController extends Controller
             'title' => 'Edit Data',
             'otherData' => $otherData,
         ];
+
         return view('otherData.edit', $data);
     }
 
@@ -64,29 +65,29 @@ class OtherDataController extends Controller
 
         $validatedData = $request->validate([
             'name' => 'required',
-            'value' => 'required'
+            'value' => 'required',
         ]);
 
-        if ($request->name == "QR Absensi Masuk" || $request->name == "QR Absensi Pulang") {
+        if ($request->name == 'QR Absensi Masuk' || $request->name == 'QR Absensi Pulang') {
             $request->validate([
-                'value' => 'size:20'
+                'value' => 'size:20',
             ]);
-        } else if ($request->name == "Waktu Absen Mulai") {
+        } elseif ($request->name == 'Waktu Absen Mulai') {
             if (strtotime($waktuBerakhir) < strtotime($request->value)) {
                 return back()->with('errorMessage', 'Value must be less than "Waktu Berakhir"')
                     ->with('oldValue', $request->value);
             }
-        } else if ($request->name == "Waktu Absen Berakhir") {
+        } elseif ($request->name == 'Waktu Absen Berakhir') {
             if (strtotime($waktuMulai) > strtotime($request->value)) {
                 return back()->with('errorMessage', 'Value must be grather than "Waktu Mulai"')
                     ->with('oldValue', $request->value);
             }
-        } else if ($request->name == "Waktu Absen Terlambat") {
+        } elseif ($request->name == 'Waktu Absen Terlambat') {
             if (strtotime($waktuMulai) > strtotime($request->value) || strtotime($waktuBerakhir) < strtotime($request->value)) {
                 return back()->with('errorMessage', 'Value must be grather than "Waktu Mulai" and less than "Waktu Berakhir"')
                     ->with('oldValue', $request->value);
             }
-        } else if ($request->name == "Hari Masuk") {
+        } elseif ($request->name == 'Hari Masuk') {
             Artisan::call('attendance:create');
             $days = [];
             if ($request->Senin) {
@@ -111,7 +112,7 @@ class OtherDataController extends Controller
                 $days[] = 'Minggu';
             }
 
-            $validatedData['value'] = implode(", ", $days);
+            $validatedData['value'] = implode(', ', $days);
         }
 
         OtherData::where('id', $request->id)->update($validatedData);

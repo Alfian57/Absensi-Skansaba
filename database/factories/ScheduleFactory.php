@@ -17,14 +17,14 @@ class ScheduleFactory extends Factory
     public function definition()
     {
         return [
-            'training_year' => "2022/2023",
-            'class_year' => "ganjil",
+            'training_year' => '2022/2023',
+            'class_year' => 'ganjil',
             'teacher_id' => rand(1, 100),
             'subject_id' => rand(1, 100),
             'grade_id' => rand(1, 100),
-            'day' => "senin",
-            'time_start' => "15:55:00",
-            'time_finish' => "15:55:00",
+            'day' => 'senin',
+            'time_start' => '15:55:00',
+            'time_finish' => '15:55:00',
         ];
     }
 }

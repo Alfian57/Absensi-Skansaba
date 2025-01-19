@@ -3,14 +3,10 @@
 namespace Database\Seeders;
 
 use App\Models\Attendance;
-use App\Models\Grade;
-use App\Models\OtherData;
 use App\Models\Student;
 use App\Models\Teacher;
-use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Database\Seeder;
-use Illuminate\Support\Str;
 
 class DatabaseSeeder extends Seeder
 {
@@ -27,7 +23,7 @@ class DatabaseSeeder extends Seeder
                 UserSeeder::class,
                 GradeSeeder::class,
                 SubjectSeeder::class,
-                StudentSeeder::class
+                StudentSeeder::class,
             ]
         );
 
@@ -43,8 +39,8 @@ class DatabaseSeeder extends Seeder
             Attendance::create([
                 'student_id' => $id,
                 'desc' => 'alpha',
-                'present_date' => date("Y-m-d"),
-                'present_time' => $now
+                'present_date' => date('Y-m-d'),
+                'present_time' => $now,
             ]);
         }
     }

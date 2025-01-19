@@ -35,7 +35,7 @@ class DailyMakeAttendance extends Command
         $now = $now->toTimeString();
 
         $attendances = Attendance::where('return_time', null)
-            ->where('present_date', '!=', date("Y-m-d"))
+            ->where('present_date', '!=', date('Y-m-d'))
             ->whereIn('desc', ['masuk', 'terlambat'])
             ->get();
 
@@ -49,19 +49,19 @@ class DailyMakeAttendance extends Command
             ]);
         }
 
-        $date = Attendance::orderBy('present_date', "DESC")->first();
+        $date = Attendance::orderBy('present_date', 'DESC')->first();
         if ($date != null) {
             $date = $date->present_date;
 
-            if ($date != date("Y-m-d")) {
+            if ($date != date('Y-m-d')) {
 
                 $studentsId = Student::pluck('id');
                 foreach ($studentsId as $id) {
                     Attendance::create([
                         'student_id' => $id,
                         'desc' => 'alpha',
-                        'present_date' => date("Y-m-d"),
-                        'present_time' => $now
+                        'present_date' => date('Y-m-d'),
+                        'present_time' => $now,
                     ]);
                 }
             }
@@ -71,8 +71,8 @@ class DailyMakeAttendance extends Command
                 Attendance::create([
                     'student_id' => $id,
                     'desc' => 'alpha',
-                    'present_date' => date("Y-m-d"),
-                    'present_time' => $now
+                    'present_date' => date('Y-m-d'),
+                    'present_time' => $now,
                 ]);
             }
         }

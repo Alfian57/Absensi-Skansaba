@@ -12,9 +12,10 @@ use Maatwebsite\Excel\Concerns\WithHeadings;
 class SkippingClassExport implements FromCollection, WithHeadings
 {
     protected $grade;
+
     protected $date;
 
-    function __construct($grade, $date)
+    public function __construct($grade, $date)
     {
         $this->grade = $grade;
         $this->date = $date;
@@ -32,14 +33,14 @@ class SkippingClassExport implements FromCollection, WithHeadings
             ->pluck('student_id');
 
         return SkippingClass::whereIn('student_id', $attendancesStudentsId)
-            ->join('subjects', 'skipping_classes.subject_id', "=", "subjects.id")
-            ->join('students', 'skipping_classes.student_id', "=", "students.id")
+            ->join('subjects', 'skipping_classes.subject_id', '=', 'subjects.id')
+            ->join('students', 'skipping_classes.student_id', '=', 'students.id')
             ->select('students.name as namaSiswa', 'students.nisn', 'subjects.name as namaPelajaran')
             ->get();
     }
 
     public function headings(): array
     {
-        return ['Nama', 'NISN', "Mata Pelajaran"];
+        return ['Nama', 'NISN', 'Mata Pelajaran'];
     }
 }

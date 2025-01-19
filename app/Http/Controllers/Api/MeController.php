@@ -24,9 +24,9 @@ class MeController extends Controller
         $student->grade = $grade->name;
 
         $data = [
-            'message'       => 'Berhasil Mendapatkan Data Siswa',
-            'errors'    => null,
-            'data'    => [
+            'message' => 'Berhasil Mendapatkan Data Siswa',
+            'errors' => null,
+            'data' => [
                 'student' => $student,
             ],
         ];
@@ -39,14 +39,14 @@ class MeController extends Controller
         $id = Auth::guard('sanctum')->user()->id;
         $validator = Validator::make($request->all(), [
             'oldPassword' => 'required',
-            'newPassword' => 'required'
+            'newPassword' => 'required',
         ]);
 
         if ($validator->fails()) {
             $data = [
-                'message'       => 'Ada Data yang Masih Kosong',
-                'errors'    => $validator->errors(),
-                'data'    => null,
+                'message' => 'Ada Data yang Masih Kosong',
+                'errors' => $validator->errors(),
+                'data' => null,
             ];
 
             return response()->json($data);
@@ -56,19 +56,19 @@ class MeController extends Controller
 
         if ($student == null) {
             $data = [
-                'message'       => 'ID Siswa Tidak Ditemukan',
-                'errors'    => null,
-                'data'    =>  null,
+                'message' => 'ID Siswa Tidak Ditemukan',
+                'errors' => null,
+                'data' => null,
             ];
 
             return response()->json($data);
         }
 
-        if (!Hash::check($request->oldPassword, $student->password)) {
+        if (! Hash::check($request->oldPassword, $student->password)) {
             $data = [
                 'message' => 'Password Lama Salah',
                 'errors' => null,
-                'data' =>  null,
+                'data' => null,
             ];
 
             return response()->json($data);
@@ -76,9 +76,8 @@ class MeController extends Controller
 
         Student::where('id', $id)
             ->update([
-                'password' => Hash::make($request->newPassword)
+                'password' => Hash::make($request->newPassword),
             ]);
-
 
         $student = Student::where('id', $id)
             ->select('id', 'nisn', 'nis', 'name', 'date_of_birth', 'gender', 'address', 'grade_id as grade', 'entry_year', 'profile_pic')
@@ -89,10 +88,10 @@ class MeController extends Controller
         $student->grade = $grade->name;
 
         $data = [
-            'message'       => 'Password Berhasil Diganti',
-            'errors'    => null,
-            'data'    => [
-                'student' => $student
+            'message' => 'Password Berhasil Diganti',
+            'errors' => null,
+            'data' => [
+                'student' => $student,
             ],
         ];
 

@@ -10,7 +10,7 @@ class Attendance extends Model
     use HasFactory;
 
     protected $guarded = [
-        'id'
+        'id',
     ];
 
     public function student()

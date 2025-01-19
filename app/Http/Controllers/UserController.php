@@ -53,7 +53,6 @@ class UserController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
     public function store(Request $request)
@@ -62,7 +61,7 @@ class UserController extends Controller
             'name' => 'required|max:255',
             'email' => 'required|email|unique:users',
             'username' => 'required|max:255|regex:/^\S*$/u|unique:users',
-            'password' => 'required|min:8'
+            'password' => 'required|min:8',
         ]);
 
         $validatedData['password'] = Hash::make($request->password);
@@ -79,9 +78,7 @@ class UserController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
-    {
-    }
+    public function show($id) {}
 
     /**
      * Show the form for editing the specified resource.
@@ -91,7 +88,7 @@ class UserController extends Controller
      */
     public function edit($id)
     {
-        Helper::addHistory('/admin/admins/' . $id . '/edit', 'Ubah Admin');
+        Helper::addHistory('/admin/admins/'.$id.'/edit', 'Ubah Admin');
 
         $data = [
             'title' => 'Edit Data Admin',
@@ -104,7 +101,6 @@ class UserController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */

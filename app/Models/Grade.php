@@ -10,7 +10,7 @@ class Grade extends Model
     use HasFactory;
 
     protected $guarded = [
-        'id'
+        'id',
     ];
 
     public function homeroomTeacher()

@@ -3,7 +3,6 @@
 namespace Database\Seeders;
 
 use App\Models\Grade;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Str;
 
@@ -70,7 +69,7 @@ class GradeSeeder extends Seeder
         foreach ($data as $item) {
             Grade::create([
                 'name' => $item,
-                'slug' => Str::slug($item)
+                'slug' => Str::slug($item),
             ]);
         }
     }

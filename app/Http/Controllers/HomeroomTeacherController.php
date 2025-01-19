@@ -3,12 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Helper;
-use App\Models\HomeroomTeacher;
 use App\Http\Requests\StoreHomeroomTeacherRequest;
 use App\Http\Requests\UpdateHomeroomTeacherRequest;
 use App\Models\Grade;
+use App\Models\HomeroomTeacher;
 use App\Models\Teacher;
-use Illuminate\Support\Str;
 
 class HomeroomTeacherController extends Controller
 {
@@ -62,14 +61,13 @@ class HomeroomTeacherController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \App\Http\Requests\StoreHomeroomTeacherRequest  $request
      * @return \Illuminate\Http\Response
      */
     public function store(StoreHomeroomTeacherRequest $request)
     {
         $validatedData = $request->validate([
             'teacher_id' => 'required',
-            'grade_id' => 'required'
+            'grade_id' => 'required',
         ]);
 
         HomeroomTeacher::create($validatedData);
@@ -80,22 +78,18 @@ class HomeroomTeacherController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  \App\Models\HomeroomTeacher  $homeroomTeacher
      * @return \Illuminate\Http\Response
      */
-    public function show(HomeroomTeacher $homeroomTeacher)
-    {
-    }
+    public function show(HomeroomTeacher $homeroomTeacher) {}
 
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  \App\Models\HomeroomTeacher  $homeroomTeacher
      * @return \Illuminate\Http\Response
      */
     public function edit(HomeroomTeacher $homeroomTeacher)
     {
-        Helper::addHistory('/admin/homeroom-teachers/' . $homeroomTeacher->id . '/edit', 'Ubah Wali Kelas');
+        Helper::addHistory('/admin/homeroom-teachers/'.$homeroomTeacher->id.'/edit', 'Ubah Wali Kelas');
 
         $homeroomTeachers = HomeroomTeacher::pluck('teacher_id');
         if ($homeroomTeachers->isEmpty()) {
@@ -120,15 +114,13 @@ class HomeroomTeacherController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param  \App\Http\Requests\UpdateHomeroomTeacherRequest  $request
-     * @param  \App\Models\HomeroomTeacher  $homeroomTeacher
      * @return \Illuminate\Http\Response
      */
     public function update(UpdateHomeroomTeacherRequest $request, HomeroomTeacher $homeroomTeacher)
     {
         $validatedData = $request->validate([
             'teacher_id' => 'required',
-            'grade_id' => 'required'
+            'grade_id' => 'required',
         ]);
 
         HomeroomTeacher::where('id', $homeroomTeacher->id)->update($validatedData);
@@ -139,13 +131,12 @@ class HomeroomTeacherController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \App\Models\HomeroomTeacher  $homeroomTeacher
      * @return \Illuminate\Http\Response
      */
     public function destroy(HomeroomTeacher $homeroomTeacher)
     {
         HomeroomTeacher::destroy($homeroomTeacher->id);
 
-        return redirect('/admin/homeroom-teachers')->with('success', 'Data Wali Kelas ' . $homeroomTeacher->teacher->name . ' Berhasil Dihapus');
+        return redirect('/admin/homeroom-teachers')->with('success', 'Data Wali Kelas '.$homeroomTeacher->teacher->name.' Berhasil Dihapus');
     }
 }
